@@ -1,0 +1,136 @@
+version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: cimg/python:3.8.5
+    working_directory: /tmp
+
+parameters:
+  run-infer-base-workflow:
+    type: boolean
+    default: false
+
+workflows:
+  default-build-workflow:
+    jobs:
+      - default-model-build
+
+  infer-base-workflow:
+    when: << pipeline.parameters.ruin-infer-base-workflow >>
+    jobs:
+      - infer-base-build-image:
+          filters:
+            branches:
+              only:
+                - main
+                - build
+      - infer-base-test-image:
+          filters:
+            branches:
+              only:
+                - main
+                - build
+
+jobs:
+  default-model-build:
+    description: Default - Build Model
+    executor: python-executor
+    steps:
+      - checkout:
+          path: /tmp/proj
+      - run:
+          name: install dependency
+          command: |
+            cd /tmp/proj
+            pip install -U setuptools wheel
+            pip install -r ./requirements.txt
+      - run:
+          name: flake8 check
+          command: |
+            cd /tmp/proj
+            flake8
+
+  infer-base-build-image:
+    description: Inference - Triton (Base) - Build Image
+    executor: python-executor
+    steps:
+      - checkout:
+          path: /tmp/infer
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/infer
+            ls -l ./
+            mkdir ,/base
+            cp -r ./inference/base/config.json ./inference/base/config.json
+            cd ./base
+            echo "export TRITON_REPO=$(cat ./config.json | jq -r '.triton.repo')" >> $BASH_ENV
+            echo "export TRITON_RELEASE=$(cat ./config.json | jq -r '.triton.release')" >> $BASH_ENV
+            echo "export TRITON_PLATFORM=$(cat ./config.json | jq -r '.triton.platform')" >> $BASH_ENV
+            echo "export TRITON_MACHINE=$(cat ./config.json | jq -r '.triton.machine')" >> $BASH_ENV
+            echo "export IMAGE_NAME=$(cat ./config.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "TRITON_REPO           = $TRITON_REPO"
+            echo "TRITON_RELEASE        = $TRITON_RELEASE"
+            echo "TRITON_PLATFORM       = $TRITON_PLATFORM"
+            echo "TRITON_MACHINE        = $TRITON_MACHINE"
+            echo "IMAGE_NAME            = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - run:
+          name: build triton base image
+          command: |
+            cd /tmp/infer
+            git clone $TRITON_REPO ./repo
+            cd ./repo
+            export TRITON_BRANCH=r$TRITON_RELEASE
+            export TRITON_IMAGE_TAG=$TRITON_RELEASE-py3-min
+            git checkout $TRITON_BRANCH
+            python build.py -v \
+            --image=gpu-base,nvcr.io/nvidia/tritonserver:$TRITON_IMAGE_TAG \
+            --target-platform=$TRITON_PLATFORM \
+            --target-machine=$TRITON_MACHINE \
+            --enable-logging --enable-stats --enable-tracking --enable-metrics \
+            --endpoint=grpc --endpoint=http \
+            --backend=ensemble --backend=onnxruntime --backend=python
+            echo "IMAGE_REPO = $IMAGE_REPO"
+            echo "IMAGE_TAG  = $IMAGE_TAG"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: push image to acr 
+          command: |
+            docker tag triotnserver:latest $IMAGE_REPO:$IMAGE_TAG
+            docker tag triotnserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
+            docker push $IMAGE_REPO:$IMAGE_TAG
+            docker push $IMAGE_REPO:$IMAGE_TAG.latest
+
+  infer-base-test-image:
+    description: Inference - Triton (Base) - Test Image
+    executor: python-executor
+    steps:
+      - checkout:
+          path: /tmp/infer
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/infer
+            ls -l ./
+            mkdir ,/base
+            cp -r ./inference/base/config.json ./inference/base/config.json
+            cd ./base
+            echo "export IMAGE_NAME=$(cat ./config.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
