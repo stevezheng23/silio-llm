@@ -13,3 +13,4 @@ workflows:
           config-path: .circleci/workflow.yml
           mapping: |
             inference/base/config.json run-infer-base-workflow true
+            inference/llm/config.json run-infer-llm-workflow true

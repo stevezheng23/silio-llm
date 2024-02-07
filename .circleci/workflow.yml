@@ -6,6 +6,10 @@ executors:
       - image: cimg/python:3.8.5
     working_directory: /tmp
 
+orbs:
+  azure-cli: circleci/azure-cli@1.0.0
+  azure-acr: circleci/azure-acr@0.2.0
+
 parameters:
   run-infer-base-workflow:
     type: boolean
@@ -25,12 +29,17 @@ workflows:
               only:
                 - main
                 - build
+          context:
+            - silio-llm-context
+
       - infer-base-test-image:
           filters:
             branches:
               only:
                 - main
                 - build
+          context:
+            - silio-llm-context
 
 jobs:
   default-model-build:
@@ -134,3 +143,23 @@ jobs:
             echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
             echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
             echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "IMAGE_NAME            = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: pull image from acr 
+          command: |
+            docker pull $IMAGE_REPO:$IMAGE_TAG
+            docker tag $IMAGE_REPO:$IMAGE_TAG triotnserver:latest
+            echo "IMAGE_REPO = $IMAGE_REPO"
+            echo "IMAGE_TAG  = $IMAGE_TAG"
