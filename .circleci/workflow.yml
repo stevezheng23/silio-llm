@@ -113,6 +113,30 @@ jobs:
             --backend=ensemble --backend=onnxruntime --backend=python
             echo "IMAGE_REPO = $IMAGE_REPO"
             echo "IMAGE_TAG  = $IMAGE_TAG"
+      - run:
+          name: build model image from base image
+          command: |
+            mkdir /tmp/infer/build
+            cp -r /tmp/infer/base/model_repository /tmp/infer/build/model_repository
+            cp -r /tmp/infer/base/Dockerfile /tmp/infer/build/Dockerfile
+            cd /tmp/infer/build
+            docker build -t custom_model:latest .
+      - run:
+          name: quick test model image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              custom_model:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
       - azure-cli/install
       - azure-cli/login-with-service-principal
       - azure-acr/acr-login:
@@ -163,3 +187,27 @@ jobs:
             docker tag $IMAGE_REPO:$IMAGE_TAG triotnserver:latest
             echo "IMAGE_REPO = $IMAGE_REPO"
             echo "IMAGE_TAG  = $IMAGE_TAG"
+      - run:
+          name: build model image from base image
+          command: |
+            mkdir /tmp/infer/build
+            cp -r /tmp/infer/base/model_repository /tmp/infer/build/model_repository
+            cp -r /tmp/infer/base/Dockerfile /tmp/infer/build/Dockerfile
+            cd /tmp/infer/build
+            docker build -t custom_model:latest .
+      - run:
+          name: quick test model image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              custom_model:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
