@@ -1,6 +1,7 @@
 import numpy as np
 import triton_python_backend_utils as pd_utils
 
+
 class TritonPythonModel:
     """Your Python model must use the same class name. Every Python model
     that is created must have "TritonPythonModel" as the class name.
@@ -22,7 +23,7 @@ class TritonPythonModel:
           * model_version: Model version
           * model_name: Model name
         """
-    
+
     def execute(self, requests):
         """`execute` MUST be implemented in every Python model. `execute`
         function receives a list of pb_utils.InferenceRequest as the only
@@ -52,5 +53,5 @@ class TritonPythonModel:
             outputs = pd_utils.Tensor('output', np.array(outputs, dtype=object))
             response = pd_utils.InferenceResponse(output_tensors=[outputs])
             responses.append(response)
-        
+
         return responses

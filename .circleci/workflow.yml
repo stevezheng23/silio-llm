@@ -21,7 +21,7 @@ workflows:
       - default-model-build
 
   infer-base-workflow:
-    when: << pipeline.parameters.ruin-infer-base-workflow >>
+    when: << pipeline.parameters.run-infer-base-workflow >>
     jobs:
       - infer-base-build-image:
           filters:
