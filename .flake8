@@ -1,0 +1,6 @@
+[flake8]
+count = True
+exclude = .git, .chalice, .circleci
+max-line-length = 128
+ignore = T001, W292, W503, E741
+per-file-ignore = __init__.py:F401, __init__.py:W391
