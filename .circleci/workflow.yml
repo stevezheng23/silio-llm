@@ -3,7 +3,7 @@ version: 2.1
 executors:
   machine-executor:
     machine:
-      - image: ubuntu-2004:202111-02
+      image: ubuntu-2004:202111-02
     working_directory: /tmp
 
 orbs:
