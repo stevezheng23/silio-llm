@@ -103,7 +103,7 @@ jobs:
             export TRITON_BRANCH=r$TRITON_RELEASE
             export TRITON_IMAGE_TAG=$TRITON_RELEASE-py3-min
             git checkout $TRITON_BRANCH
-            python build.py -v \
+            python3 build.py -v \
             --image=gpu-base,nvcr.io/nvidia/tritonserver:$TRITON_IMAGE_TAG \
             --target-platform=$TRITON_PLATFORM \
             --target-machine=$TRITON_MACHINE \
@@ -143,8 +143,8 @@ jobs:
       - run:
           name: push image to acr 
           command: |
-            docker tag triotnserver:latest $IMAGE_REPO:$IMAGE_TAG
-            docker tag triotnserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
             docker push $IMAGE_REPO:$IMAGE_TAG
             docker push $IMAGE_REPO:$IMAGE_TAG.latest
 
@@ -180,7 +180,7 @@ jobs:
           name: pull image from acr 
           command: |
             docker pull $IMAGE_REPO:$IMAGE_TAG
-            docker tag $IMAGE_REPO:$IMAGE_TAG triotnserver:latest
+            docker tag $IMAGE_REPO:$IMAGE_TAG tritonserver:latest
             echo "IMAGE_REPO = $IMAGE_REPO"
             echo "IMAGE_TAG  = $IMAGE_TAG"
       - run:
