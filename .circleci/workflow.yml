@@ -258,6 +258,10 @@ jobs:
             echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
             echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
             echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
       - run:
           name: build llm image from base image
           command: |
@@ -282,10 +286,6 @@ jobs:
               echo "ERROR"
               exit 1
             fi
-      - azure-cli/install
-      - azure-cli/login-with-service-principal
-      - azure-acr/acr-login:
-          registry-name: $IMAGE_REGISTRY_NAME
       - run:
           name: push image to acr 
           command: |
