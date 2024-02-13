@@ -14,6 +14,9 @@ parameters:
   run-infer-base-workflow:
     type: boolean
     default: false
+  run-infer-llm-workflow:
+    type: boolean
+    default: false
 
 workflows:
   default-build-workflow:
@@ -35,6 +38,29 @@ workflows:
       - infer-base-test-image:
           requires:
             - infer-base-build-image
+          filters:
+            branches:
+              only:
+                - main
+                - build
+          context:
+            - silio-llm-context
+
+  infer-llm-workflow:
+    when: << pipeline.parameters.run-infer-llm-workflow >>
+    jobs:
+      - infer-llm-build-image:
+          filters:
+            branches:
+              only:
+                - main
+                - build
+          context:
+            - silio-llm-context
+
+      - infer-llm-test-image:
+          requires:
+            - infer-llm-build-image
           filters:
             branches:
               only:
@@ -197,6 +223,118 @@ jobs:
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
               custom_model:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
+
+  infer-llm-build-image:
+    description: Inference - Triton (LLM) - Build Image
+    executor: machine-executor
+    steps:
+      - checkout:
+          path: /tmp/proj
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/proj/inference/llm
+            ls -l ./
+            echo "export IMAGE_NAME=$(cat ./config.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "IMAGE_NAME            = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - run:
+          name: build llm image from base image
+          command: |
+            mkdir /tmp/build
+            cp -r /tmp/proj/inference/llm/model_repository /tmp/build/model_repository
+            cp -r /tmp/proj/inference/llm/Dockerfile /tmp/build/Dockerfile
+            cd /tmp/build
+            docker build -t custom_model:latest .
+      - run:
+          name: quick test model image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              custom_model:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: push image to acr 
+          command: |
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
+            docker push $IMAGE_REPO:$IMAGE_TAG
+            docker push $IMAGE_REPO:$IMAGE_TAG.latest
+
+  infer-llm-test-image:
+    description: Inference - Triton (LLM) - Test Image
+    executor: machine-executor
+    steps:
+      - checkout:
+          path: /tmp/proj
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/proj/inference/llm
+            ls -l ./
+            echo "export IMAGE_NAME=$(cat ./config.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "IMAGE_NAME            = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: pull image from acr 
+          command: |
+            docker pull $IMAGE_REPO:$IMAGE_TAG
+            docker tag $IMAGE_REPO:$IMAGE_TAG tritonserver:latest
+            echo "IMAGE_REPO = $IMAGE_REPO"
+            echo "IMAGE_TAG  = $IMAGE_TAG"
+      - run:
+          name: quick test llm image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              tritonserver:latest \
               tritonserver --model-repository=/model_repository
             sleep 20
             curl -v localhost:8000/v2/health/ready
