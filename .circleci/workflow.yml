@@ -145,13 +145,13 @@ jobs:
             cp -r /tmp/proj/inference/base/model_repository /tmp/build/model_repository
             cp -r /tmp/proj/inference/base/Dockerfile /tmp/build/Dockerfile
             cd /tmp/build
-            docker build -t custom_model:latest .
+            docker build -t custom_image:latest .
       - run:
           name: quick test model image
           command: |
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
-              custom_model:latest \
+              custom_image:latest \
               tritonserver --model-repository=/model_repository
             sleep 20
             curl -v localhost:8000/v2/health/ready
@@ -216,13 +216,13 @@ jobs:
             cp -r /tmp/proj/inference/base/model_repository /tmp/build/model_repository
             cp -r /tmp/proj/inference/base/Dockerfile /tmp/build/Dockerfile
             cd /tmp/build
-            docker build -t custom_model:latest .
+            docker build -t custom_image:latest .
       - run:
           name: quick test model image
           command: |
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
-              custom_model:latest \
+              custom_image:latest \
               tritonserver --model-repository=/model_repository
             sleep 20
             curl -v localhost:8000/v2/health/ready
@@ -269,13 +269,13 @@ jobs:
             cp -r /tmp/proj/inference/llm/model_repository /tmp/build/model_repository
             cp -r /tmp/proj/inference/llm/Dockerfile /tmp/build/Dockerfile
             cd /tmp/build
-            docker build -t custom_model:latest .
+            docker build -t custom_image:latest .
       - run:
           name: quick test model image
           command: |
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
-              custom_model:latest \
+              custom_image:latest \
               tritonserver --model-repository=/model_repository
             sleep 20
             curl -v localhost:8000/v2/health/ready
@@ -289,8 +289,8 @@ jobs:
       - run:
           name: push image to acr 
           command: |
-            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG
-            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
+            docker tag custom_image:latest $IMAGE_REPO:$IMAGE_TAG
+            docker tag custom_image:latest $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
             docker push $IMAGE_REPO:$IMAGE_TAG
             docker push $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
 
@@ -326,7 +326,7 @@ jobs:
           name: pull image from acr 
           command: |
             docker pull $IMAGE_REPO:$IMAGE_TAG
-            docker tag $IMAGE_REPO:$IMAGE_TAG tritonserver:latest
+            docker tag $IMAGE_REPO:$IMAGE_TAG custom_image:latest
             echo "IMAGE_REPO = $IMAGE_REPO"
             echo "IMAGE_TAG  = $IMAGE_TAG"
       - run:
@@ -334,7 +334,7 @@ jobs:
           command: |
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
-              tritonserver:latest \
+              custom_image:latest \
               tritonserver --model-repository=/model_repository
             sleep 20
             curl -v localhost:8000/v2/health/ready
