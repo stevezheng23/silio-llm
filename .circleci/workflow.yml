@@ -170,9 +170,9 @@ jobs:
           name: push image to acr 
           command: |
             docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG
-            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
             docker push $IMAGE_REPO:$IMAGE_TAG
-            docker push $IMAGE_REPO:$IMAGE_TAG.latest
+            docker push $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
 
   infer-base-test-image:
     description: Inference - Triton (Base) - Test Image
@@ -290,9 +290,9 @@ jobs:
           name: push image to acr 
           command: |
             docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG
-            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG.latest
+            docker tag tritonserver:latest $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
             docker push $IMAGE_REPO:$IMAGE_TAG
-            docker push $IMAGE_REPO:$IMAGE_TAG.latest
+            docker push $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
 
   infer-llm-test-image:
     description: Inference - Triton (LLM) - Test Image
