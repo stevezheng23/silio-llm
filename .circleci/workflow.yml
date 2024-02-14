@@ -110,7 +110,7 @@ jobs:
       - run:
           name: generate image name & tag
           command: |
-            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
             echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
             echo "TRITON_REPO           = $TRITON_REPO"
             echo "TRITON_RELEASE        = $TRITON_RELEASE"
@@ -192,7 +192,7 @@ jobs:
       - run:
           name: generate image name & tag
           command: |
-            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
             echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
             echo "IMAGE_NAME            = $IMAGE_NAME"
             echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
@@ -252,7 +252,7 @@ jobs:
       - run:
           name: generate image name & tag
           command: |
-            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
             echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
             echo "IMAGE_NAME            = $IMAGE_NAME"
             echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
@@ -312,7 +312,7 @@ jobs:
       - run:
           name: generate image name & tag
           command: |
-            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_REGISTRY_NAME" >> $BASH_ENV
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
             echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
             echo "IMAGE_NAME            = $IMAGE_NAME"
             echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
