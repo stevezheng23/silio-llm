@@ -16,7 +16,7 @@ workflows:
             .circleci/config.yml run-infer-llm-workflow false
             .circleci/workflow.yml run-infer-base-workflow true
             .circleci/workflow.yml run-infer-llm-workflow false
-            inference/base/config.json run-infer-base-workflow true
-            inference/base/Dockerfile run-infer-base-workflow true
+            inference/base/config.json run-infer-base-workflow false
+            inference/base/Dockerfile run-infer-base-workflow false
             inference/llm/config.json run-infer-llm-workflow false
             inference/llm/Dockerfile run-infer-llm-workflow false
