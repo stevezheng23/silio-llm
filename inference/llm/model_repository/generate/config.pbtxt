@@ -1,4 +1,4 @@
-name: "custom"
+name: "generate"
 backend: "python"
 max_batch_size : 0
 input [
