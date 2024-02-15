@@ -134,8 +134,9 @@ jobs:
             --target-platform=$TRITON_PLATFORM \
             --target-machine=$TRITON_MACHINE \
             --enable-logging --enable-stats --enable-tracing --enable-metrics \
+            --enable-cpu-metrics --enable-gpu-metrics --enable-gpu \
             --endpoint=grpc --endpoint=http \
-            --backend=ensemble --backend=onnxruntime --backend=python
+            --backend=ensemble --backend=python --backend=vllm
             echo "IMAGE_REPO = $IMAGE_REPO"
             echo "IMAGE_TAG  = $IMAGE_TAG"
       - run:
