@@ -6,7 +6,7 @@
     "machine": "x86_64"
   },
   "image": {
-    "name": "silio/tritonserver",
+    "name": "tritonserver",
     "tag_prefix": "23.02-py3-cpu",
     "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
     "resource_group": "silio_westus",
