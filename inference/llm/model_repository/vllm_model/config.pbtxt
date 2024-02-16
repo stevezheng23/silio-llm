@@ -1,0 +1,13 @@
+backend: "vllm"
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_MODEL
+  }
+]
+instance_group [
+  {
+    kind: KIND_CPU
+  }
+]
