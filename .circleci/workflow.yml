@@ -281,7 +281,7 @@ jobs:
       - run:
           name: quick test model image
           command: |
-            docker run --rm -d --shm-size 1g \
+            docker run --rm --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
               custom_image:latest \
               tritonserver --model-repository=/model_repository
