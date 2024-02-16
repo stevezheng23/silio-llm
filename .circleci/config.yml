@@ -19,4 +19,4 @@ workflows:
             inference/base/config.json run-infer-base-workflow false
             inference/base/Dockerfile run-infer-base-workflow false
             inference/llm/config.json run-infer-llm-workflow false
-            inference/llm/Dockerfile run-infer-llm-workflow false
+            inference/llm/Dockerfile run-infer-llm-workflow true
