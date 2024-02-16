@@ -12,7 +12,7 @@ workflows:
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/workflow.yml
           mapping: |
-            .circleci/config.yml run-infer-base-workflow true
+            .circleci/config.yml run-infer-base-workflow false
             .circleci/config.yml run-infer-llm-workflow true
             .circleci/workflow.yml run-infer-base-workflow false
             .circleci/workflow.yml run-infer-llm-workflow false
