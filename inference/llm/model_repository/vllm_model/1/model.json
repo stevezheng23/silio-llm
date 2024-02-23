@@ -1,0 +1,5 @@
+{
+  "model":"mistralai/Mixtral-8x7B-Instruct-v0.1",
+  "disable_log_requests": "true",
+  "gpu_memory_utilization": 0.8
+}
