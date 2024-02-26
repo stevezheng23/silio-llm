@@ -21,9 +21,6 @@ az login
 az account set --subscription $IMAGE_SUBSCRIPTION_ID
 az acr login --name $IMAGE_REGISTRY_NAME
 
-export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME
-export IMAGE_TAG=$IMAGE_TAG_PREFIX.latest
-
 mkdir ./build
 cp -r ../model_repository ./build/model_repository
 cp -r ../Dockerfile ./build/Dockerfile
@@ -37,6 +34,9 @@ docker run --rm -d --shm-size 1g \
   tritonserver --model-repository=/model_repository
 sleep 20
 curl -v localhost:8000/v2/health/ready
+
+export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME
+export IMAGE_TAG=$IMAGE_TAG_PREFIX.latest
 
 docker tag custom_image:latest $IMAGE_REPO:$IMAGE_TAG
 docker push $IMAGE_REPO:$IMAGE_TAG
