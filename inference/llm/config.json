@@ -1,10 +1,4 @@
 {
-  "triton": {
-    "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
-    "resource_group": "silio_westus",
-    "registry_name": "silio",
-    "registry_server": "silio.azurecr.io"
-  },
   "image": {
     "name": "silio-llm",
     "tag_prefix": "mixtral-8x7b-instruct-v0.1",
