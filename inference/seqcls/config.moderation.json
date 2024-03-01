@@ -1,0 +1,23 @@
+{
+  "model": {
+    "id": "silio-moderation:1",
+    "name": "silio-moderation",
+    "version": 1,
+    "type": "bert",
+    "runtime": "onnx",
+    "num_labels": 2,
+    "artifact_path": "silio-moderation-onnx",
+    "run_id": "aml_silio_moderation",
+    "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+    "resource_group": "silio_westus",
+    "workspace_name": "silio-aml"
+  },
+  "image": {
+    "name": "silio-moderation",
+    "tag_prefix": "tritonserver-23.02-py3-cpu",
+    "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+    "resource_group": "silio_westus",
+    "registry_name": "silio",
+    "registry_server": "silio.azurecr.io"
+  }
+}
