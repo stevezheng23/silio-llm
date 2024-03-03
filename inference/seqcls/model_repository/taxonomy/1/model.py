@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import triton_python_backend_utils as pd_utils
-from scipy.special import softmax
 
 
 class TritonPythonModel:
