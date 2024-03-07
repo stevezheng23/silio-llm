@@ -1,8 +1,8 @@
 import numpy as np
 import triton_python_backend_utils as pd_utils
 
-import nltk
 from nltk.tokenize import TreebankWordTokenizer
+
 
 class TritonPythonModel:
     """Your Python model must use the same class name. Every Python model
@@ -27,7 +27,7 @@ class TritonPythonModel:
         """
 
         self.word_tokenizer = TreebankWordTokenizer()
-    
+
     def execute(self, requests):
         """`execute` MUST be implemented in every Python model. `execute`
         function receives a list of pb_utils.InferenceRequest as the only
