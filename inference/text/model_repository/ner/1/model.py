@@ -4,6 +4,7 @@ import triton_python_backend_utils as pd_utils
 
 import spacy
 
+
 class TritonPythonModel:
     """Your Python model must use the same class name. Every Python model
     that is created must have "TritonPythonModel" as the class name.
@@ -65,9 +66,9 @@ class TritonPythonModel:
                 output_results.append(json.dumps(ents))
 
             output_tensors = [
-              pd_utils.Tensor('results', np.array(output_results, dtype=object))
+                pd_utils.Tensor('results', np.array(output_results, dtype=object))
             ]
             response = pd_utils.InferenceResponse(output_tensors=output_tensors)
             responses.append(response)
-        
+
         return responses
