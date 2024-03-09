@@ -4,6 +4,7 @@ import triton_python_backend_utils as pd_utils
 import nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer
 
+
 class TritonPythonModel:
     """Your Python model must use the same class name. Every Python model
     that is created must have "TritonPythonModel" as the class name.
@@ -28,7 +29,7 @@ class TritonPythonModel:
 
         nltk.download('punkt')
         self.sent_tokenizer = PunktSentenceTokenizer()
-    
+
     def execute(self, requests):
         """`execute` MUST be implemented in every Python model. `execute`
         function receives a list of pb_utils.InferenceRequest as the only
