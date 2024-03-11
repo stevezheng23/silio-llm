@@ -10,22 +10,22 @@ input [
 ]
 output [
   {
-    name: "sent_text"
+    name: "text"
     data_type: TYPE_STRING
     dims: [ -1 ]
   },
   {
-    name: "sent_offset"
+    name: "offset"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },
   {
-    name: "sent_length"
+    name: "length"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },
   {
-    name: "sent_index"
+    name: "index"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },
