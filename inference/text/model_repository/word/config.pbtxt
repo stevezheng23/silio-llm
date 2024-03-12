@@ -10,22 +10,22 @@ input [
 ]
 output [
   {
-    name: "word_text"
+    name: "text"
     data_type: TYPE_STRING
     dims: [ -1 ]
   },
   {
-    name: "word_offset"
+    name: "offset"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },
   {
-    name: "word_length"
+    name: "length"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },
   {
-    name: "word_index"
+    name: "index"
     data_type: TYPE_INT32
     dims: [ -1 ]
   },

@@ -69,10 +69,10 @@ class TritonPythonModel:
                     group_indices.append(i)
 
             output_tensors = [
-                pd_utils.Tensor('word_text', np.array(word_texts, dtype=object)),
-                pd_utils.Tensor('word_offset', np.array(word_offsets, dtype=int)),
-                pd_utils.Tensor('word_length', np.array(word_lengths, dtype=int)),
-                pd_utils.Tensor('word_index', np.array(word_indices, dtype=int)),
+                pd_utils.Tensor('text', np.array(word_texts, dtype=object)),
+                pd_utils.Tensor('offset', np.array(word_offsets, dtype=int)),
+                pd_utils.Tensor('length', np.array(word_lengths, dtype=int)),
+                pd_utils.Tensor('index', np.array(word_indices, dtype=int)),
                 pd_utils.Tensor('group_index', np.array(group_indices, dtype=int))
             ]
             response = pd_utils.InferenceResponse(output_tensors=output_tensors)
