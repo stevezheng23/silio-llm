@@ -17,6 +17,12 @@ parameters:
   run-infer-llm-workflow:
     type: boolean
     default: false
+  run-infer-text-workflow:
+    type: boolean
+    default: false
+  run-infer-prompt-workflow:
+    type: boolean
+    default: false
 
 workflows:
   default-build-workflow:
