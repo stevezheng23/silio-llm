@@ -16,11 +16,14 @@ workflows:
             .circleci/config.yml run-infer-llm-workflow true
             .circleci/config.yml run-infer-text-workflow true
             .circleci/config.yml run-infer-prompt-workflow false
+            .circleci/config.yml run-infer-moderation-workflow false
             .circleci/workflow.yml run-infer-base-workflow true
             .circleci/workflow.yml run-infer-llm-workflow true
             .circleci/workflow.yml run-infer-text-workflow true
             .circleci/workflow.yml run-infer-prompt-workflow false
+            .circleci/workflow.yml run-infer-moderation-workflow false
             inference/base/config.json run-infer-base-workflow true
             inference/llm/config.json run-infer-llm-workflow true
             inference/text/config.json run-infer-text-workflow true
             inference/seqcls/config.prompt.json run-infer-prompt-workflow false
+            inference/seqcls/config.moderation.json run-infer-moderation-workflow false
