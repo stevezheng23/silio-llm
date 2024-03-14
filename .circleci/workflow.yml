@@ -23,6 +23,9 @@ parameters:
   run-infer-prompt-workflow:
     type: boolean
     default: false
+  run-infer-moderation-workflow:
+    type: boolean
+    default: false
 
 workflows:
   default-build-workflow:
@@ -113,6 +116,29 @@ workflows:
       - infer-prompt-test-image:
           requires:
             - infer-prompt-build-image
+          filters:
+            branches:
+              only:
+                - main
+                - build
+          context:
+            - silio-llm-context
+
+  infer-moderation-workflow:
+    when: << pipeline.parameters.run-infer-moderation-workflow >>
+    jobs:
+      - infer-moderation-build-image:
+          filters:
+            branches:
+              only:
+                - main
+                - build
+          context:
+            - silio-llm-context
+
+      - infer-moderation-test-image:
+          requires:
+            - infer-moderation-build-image
           filters:
             branches:
               only:
@@ -671,6 +697,175 @@ jobs:
             echo "IMAGE_TAG  = $IMAGE_TAG"
       - run:
           name: quick test prompt image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              custom_image:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
+
+  infer-moderation-build-image:
+    description: Inference - Triton (Moderation) - Build Image
+    executor: machine-executor
+    steps:
+      - checkout:
+          path: /tmp/proj
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/proj/inference/seqcls
+            ls -l ./
+            echo "export MODEL_ID=$(cat ./config.moderation.json | jq -r '.model.id')" >> $BASH_ENV
+            echo "export MODEL_TYPE=$(cat ./config.moderation.json | jq -r '.model.type')" >> $BASH_ENV
+            echo "export MODEL_NUM_LABELS=$(cat ./config.moderation.json | jq -r '.model.num_labels')" >> $BASH_ENV
+            echo "export MODEL_ARTIFACT_PATH=$(cat ./config.moderation.json | jq -r '.model.artifact_path')" >> $BASH_ENV
+            echo "export MODEL_SUBSCRIPTION_ID=$(cat ./config.moderation.json | jq -r '.model.subscription_id')" >> $BASH_ENV
+            echo "export MODEL_RESOURCE_GROUP=$(cat ./config.moderation.json | jq -r '.model.resource_group')" >> $BASH_ENV
+            echo "export MODEL_WORKSPACE_NAME=$(cat ./config.moderation.json | jq -r '.model.workspace_name')" >> $BASH_ENV
+            echo "export TOKENIZER_NAME=$(cat ./config.moderation.json | jq -r '.tokenizer.name')" >> $BASH_ENV
+            echo "export TOKENIZER_MAX_LENGTH=$(cat ./config.moderation.json | jq -r '.tokenizer.max_length')" >> $BASH_ENV
+            echo "export TOKENIZER_OUTPUT_TYPE_IDS=$(cat ./config.moderation.json | jq -r '.tokenizer.output_type_ids')" >> $BASH_ENV
+            echo "export IMAGE_NAME=$(cat ./config.moderation.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.moderation.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.moderation.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.moderation.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "MODEL_ID                  = $MODEL_ID"
+            echo "MODEL_TYPE                = $MODEL_TYPE"
+            echo "MODEL_NUM_LABELS          = $MODEL_NUM_LABELS"
+            echo "MODEL_ARTIFACT_PATH       = $MODEL_ARTIFACT_PATH"
+            echo "MODEL_SUBSCRIPTION_ID     = $MODEL_SUBSCRIPTION_ID"
+            echo "MODEL_RESOURCE_GROUP      = $MODEL_RESOURCE_GROUP"
+            echo "MODEL_WORKSPACE_NAME      = $MODEL_WORKSPACE_NAME"
+            echo "TOKENIZER_NAME            = $TOKENIZER_NAME"
+            echo "TOKENIZER_MAX_LENGTH      = $TOKENIZER_MAX_LENGTH"
+            echo "TOKENIZER_OUTPUT_TYPE_IDS = $TOKENIZER_OUTPUT_TYPE_IDS"
+            echo "IMAGE_NAME                = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX          = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME       = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER     = $IMAGE_REGISTRY_SERVER"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: install azure cli ml extension
+          command: |
+            az extension add -n azure-cli-ml -y
+      - run:
+          name: download moderation model from azure ml model registry
+          command: |
+            mkdir /tmp/model
+            az ml model download \
+            --model-id $MODEL_ID \
+            --target-dir /tmp/model/ \
+            --workspace-name $MODEL_WORKSPACE_NAME \
+            --resource-group $MODEL_RESOURCE_GROUP \
+            --subscription-id $MODEL_SUBSCRIPTION_ID
+            ls -l /tmp/model
+      - run:
+          name: build moderation image from base image
+          command: |
+            mkdir /tmp/build
+            cp -r /tmp/proj/inference/seqcls/update_template.py /tmp/build/update_template.py
+            cp -r /tmp/proj/inference/seqcls/Dockerfile /tmp/build/Dockerfile
+            cp -r /tmp/proj/inference/seqcls/model_repository /tmp/build/model_repository
+            cp -r /tmp/model/$MODEL_ARTIFACT_PATH/model.onnx /tmp/build/model_repository/predict-onnx/1/
+            cp -r /tmp/model/$MODEL_ARTIFACT_PATH/labels.txt /tmp/build/model_repository/postproc/1/
+            cp -r /tmp/model/$MODEL_ARTIFACT_PATH/labels.txt /tmp/build/model_repository/taxonomy/1/
+            python /tmp/build/update_template.py \
+            --input_file /tmp/build/model_repository/predict-onnx/config.pbtxt.tmpl \
+            --outputp_file /tmp/build/model_repository/predict-onnx/config.pbtxt \
+            --num_labels $MODEL_NUM_LABELS
+            rm /tmp/build/model_repository/predict-onnx/config.pbtxt.tmpl
+            python /tmp/build/update_template.py \
+            --input_file /tmp/build/model_repository/postproc/config.pbtxt.tmpl \
+            --outputp_file /tmp/build/model_repository/postproc/config.pbtxt \
+            --num_labels $MODEL_NUM_LABELS
+            rm /tmp/build/model_repository/postproc/config.pbtxt.tmpl
+            python /tmp/build/update_template.py \
+            --input_file /tmp/build/model_repository/tokenize/tokenizer_config.json.tmpl \
+            --outputp_file /tmp/build/model_repository/tokenize/tokenizer_config.json \
+            --model $TOKENIZER_NAME \
+            --max_length $TOKENIZER_MAX_LENGTH \
+            --output_type_ids $TOKENIZER_OUTPUT_TYPE_IDS
+            rm /tmp/build/model_repository/tokenize/tokenizer_config.json.tmpl
+            cd /tmp/build
+            ls -l
+            docker build -t custom_image:latest .
+      - run:
+          name: quick test moderation image
+          command: |
+            docker run --rm -d --shm-size 1g \
+              -p8000:8000 -p8001:8001 -p8002:8002 \
+              custom_image:latest \
+              tritonserver --model-repository=/model_repository
+            sleep 20
+            curl -v localhost:8000/v2/health/ready
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v2/health/ready)
+            if [ $HTTP_CODE -eq 200 ]; then
+              echo "OK"
+            else
+              echo "ERROR"
+              exit 1
+            fi
+      - run:
+          name: push moderation image to acr 
+          command: |
+            docker tag custom_image:latest $IMAGE_REPO:$IMAGE_TAG
+            docker tag custom_image:latest $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
+            docker push $IMAGE_REPO:$IMAGE_TAG
+            docker push $IMAGE_REPO:$IMAGE_TAG_PREFIX.latest
+
+  infer-moderation-test-image:
+    description: Inference - Triton (Moderation) - Test Image
+    executor: machine-executor
+    steps:
+      - checkout:
+          path: /tmp/proj
+      - run:
+          name: parse triton config
+          command: |
+            cd /tmp/proj/inference/moderation
+            ls -l ./
+            echo "export IMAGE_NAME=$(cat ./config.json | jq -r '.image.name')" >> $BASH_ENV
+            echo "export IMAGE_TAG_PREFIX=$(cat ./config.json | jq -r '.image.tag_prefix')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_NAME=$(cat ./config.json | jq -r '.image.registry_name')" >> $BASH_ENV
+            echo "export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server')" >> $BASH_ENV
+      - run:
+          name: generate image name & tag
+          command: |
+            echo "export IMAGE_REPO=$IMAGE_REGISTRY_SERVER/$IMAGE_NAME" >> $BASH_ENV
+            echo "export IMAGE_TAG=$IMAGE_TAG_PREFIX.$CIRCLE_SHA1" >> $BASH_ENV
+            echo "IMAGE_NAME            = $IMAGE_NAME"
+            echo "IMAGE_TAG_PREFIX      = $IMAGE_TAG_PREFIX"
+            echo "IMAGE_REGISTRY_NAME   = $IMAGE_REGISTRY_NAME"
+            echo "IMAGE_REGISTRY_SERVER = $IMAGE_REGISTRY_SERVER"
+      - azure-cli/install
+      - azure-cli/login-with-service-principal
+      - azure-acr/acr-login:
+          registry-name: $IMAGE_REGISTRY_NAME
+      - run:
+          name: pull moderation image from acr 
+          command: |
+            docker pull $IMAGE_REPO:$IMAGE_TAG
+            docker tag $IMAGE_REPO:$IMAGE_TAG custom_image:latest
+            echo "IMAGE_REPO = $IMAGE_REPO"
+            echo "IMAGE_TAG  = $IMAGE_TAG"
+      - run:
+          name: quick test moderation image
           command: |
             docker run --rm -d --shm-size 1g \
               -p8000:8000 -p8001:8001 -p8002:8002 \
