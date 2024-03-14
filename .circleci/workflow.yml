@@ -23,7 +23,7 @@ parameters:
   run-infer-prompt-workflow:
     type: boolean
     default: false
-  run-moderation-prompt-workflow:
+  run-infer-moderation-workflow:
     type: boolean
     default: false
 
