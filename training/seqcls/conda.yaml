@@ -1,0 +1,25 @@
+name: silio-llm
+channels:
+  - defaults
+  - anaconda
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - torch==1.8.1
+    - torchvision==0.9.1
+    - mlflow==1.14.0
+    - azureml-mlflow==1.28.0
+    - transformers==4.12.0
+    - datasets==1.8.0
+    - sentencepiece==0.1.94
+    - protobuf==3.19.4
+    - onnxruntime==1.4.0
+    - onnxruntime-tools
+    - scipy
+    - scikit-learn
+    - accelerate
+    - tensorboardX
+    - boto3
+    - matplotlib
