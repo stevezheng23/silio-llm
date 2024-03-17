@@ -15,17 +15,17 @@
       "output_dir": "./output",
       "seed": 42,
       "save_total_limit": 10,
-      "registered_name": "roberta-base-question-daily_dialog"
+      "registered_name": "roberta-base-prompt-deepset"
     },
     "data": {
       "datastore_name": "xiaomingdata",
-      "train_blob_path": "data/question/daily_dialog/train.sample.json",
+      "train_blob_path": "data/prompt/deepset/train.sample.json",
       "train_file": "train.json",
-      "dev_blob_path": "data/question/daily_dialog/dev.json",
+      "dev_blob_path": "data/prompt/deepset/dev.json",
       "dev_file": "dev.json",
-      "test_blob_path": "data/question/daily_dialog/test.json",
+      "test_blob_path": "data/prompt/deepset/test.json",
       "test_file": "test.json",
-      "eval_blob_path": "data/question/daily_dialog/test.json",
+      "eval_blob_path": "data/prompt/deepset/test.json",
       "eval_file": "eval.json"
     },
     "platform": {
@@ -33,7 +33,7 @@
       "aml_resource_group": "xiaoming_westus",
       "aml_workspace_name": "xiaoming-aml",
       "aml_compute_target": "xiaoming-gpu",
-      "aml_experiment_name": "aml-seqcls-question-daily_dialog",
+      "aml_experiment_name": "aml-seqcls-prompt-deepset",
       "aml_datastore_name": "xiaomingdata",
       "aml_mlflow_version": "1.23.1",
       "aml_azureml_mlflow_version": "1.38.0",
