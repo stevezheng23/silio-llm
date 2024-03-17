@@ -1,0 +1,43 @@
+[
+  {
+    "hparam": {
+      "num_gpus": 1,
+      "model_type": "roberta",
+      "model_name_or_path": "roberta-base",
+      "max_seq_length": 128,
+      "batch_size": 16,
+      "gradient_accumulation_steps": 1,
+      "learning_rate": 1.5e-05,
+      "num_epochs": 3.0,
+      "weight_decay": 0.01,
+      "warmup_steps": 500,
+      "eval_steps": 100,
+      "output_dir": "./output",
+      "seed": 42,
+      "save_total_limit": 10,
+      "registered_name": "roberta-base-question-daily_dialog"
+    },
+    "data": {
+      "datastore_name": "xiaomingdata",
+      "train_blob_path": "data/question/daily_dialog/train.sample.json",
+      "train_file": "train.json",
+      "dev_blob_path": "data/question/daily_dialog/dev.json",
+      "dev_file": "dev.json",
+      "test_blob_path": "data/question/daily_dialog/test.json",
+      "test_file": "test.json",
+      "eval_blob_path": "data/question/daily_dialog/test.json",
+      "eval_file": "eval.json"
+    },
+    "platform": {
+      "aml_subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+      "aml_resource_group": "xiaoming_westus",
+      "aml_workspace_name": "xiaoming-aml",
+      "aml_compute_target": "xiaoming-gpu",
+      "aml_experiment_name": "aml-seqcls-question-daily_dialog",
+      "aml_datastore_name": "xiaomingdata",
+      "aml_mlflow_version": "1.23.1",
+      "aml_azureml_mlflow_version": "1.38.0",
+      "aml_azure_cli_core_version": "2.34.1"
+    }
+  }
+]
