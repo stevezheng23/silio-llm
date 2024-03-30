@@ -28,7 +28,7 @@ entry_points:
       seed: {type: int, default: 42}
       save_total_limit: {type: int, default: 10}
       registered_name: {type: str, default: ""}
-    command: "sh ./script/run_seqcls.full.sh \
+    command: "sh ./script/run_seqcls.e2e.sh \
               --numgpus={num_gpus} \
               --randomseed={seed} \
               --dsname={datastore_name} \
@@ -52,7 +52,7 @@ entry_points:
               --evalsteps={eval_steps} \
               --savelimit={save_total_limit} \
               --registeredname={registered_name}"
-  cls_train:
+  seqcls_train:
     parameters:
       num_gpus: {type: int, default: 1}
       datastore_name: {type: str, default: ""}
@@ -99,7 +99,7 @@ entry_points:
               --warmupsteps={warmup_steps} \
               --evalsteps={eval_steps} \
               --savelimit={save_total_limit}"
-  cls_eval:
+  seqcls_eval:
     parameters:
       train_run_id: {type: str, default: ""}
       artifact_path: {type: str, default: ""}
@@ -120,7 +120,7 @@ entry_points:
               --labelfile={label_file} \
               --maxseqlen={max_seq_length} \
               --batchsize={batch_size}"
-  cls_register:
+  seqcls_register:
     parameters:
       train_run_id: {type: str, default: ""}
       artifact_path: {type: str, default: ""}

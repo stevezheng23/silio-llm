@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 supported_entry_point = {
     "main",
-    "cls_train",
-    "cls_eval",
-    "cls_register",
+    "seqcls_train",
+    "seqcls_eval",
+    "seqcls_register",
 }
 
 
