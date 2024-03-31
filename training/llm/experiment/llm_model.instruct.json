@@ -15,17 +15,13 @@
       "output_dir": "./output",
       "seed": 42,
       "save_total_limit": 10,
-      "registered_name": "roberta-base-prompt-deepset"
+      "registered_name": "roberta-base-moderation-mmathys"
     },
     "data": {
       "datastore_name": "siliodata",
-      "train_blob_path": "data/prompt/deepset/train.sample.json",
+      "train_blob_path": "data/moderation/mmathys/train.sample.json",
       "train_file": "train.json",
-      "dev_blob_path": "data/prompt/deepset/dev.json",
-      "dev_file": "dev.json",
-      "test_blob_path": "data/prompt/deepset/test.json",
-      "test_file": "test.json",
-      "eval_blob_path": "data/prompt/deepset/test.json",
+      "eval_blob_path": "data/moderation/daily_dialog/test.json",
       "eval_file": "eval.json"
     },
     "platform": {
@@ -33,7 +29,7 @@
       "aml_resource_group": "silio_westus",
       "aml_workspace_name": "silio-aml",
       "aml_compute_target": "silio-gpu",
-      "aml_experiment_name": "aml-seqcls-prompt-deepset",
+      "aml_experiment_name": "aml-seqcls-moderation-mmathys",
       "aml_datastore_name": "siliodata",
       "aml_mlflow_version": "1.23.1",
       "aml_azureml_mlflow_version": "1.38.0",
