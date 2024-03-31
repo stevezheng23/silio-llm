@@ -18,7 +18,7 @@
       "registered_name": "roberta-base-prompt-deepset"
     },
     "data": {
-      "datastore_name": "siliodata",
+      "datastore_name": "xiaomingdata",
       "train_blob_path": "data/prompt/deepset/train.sample.json",
       "train_file": "train.json",
       "dev_blob_path": "data/prompt/deepset/dev.json",
@@ -30,11 +30,11 @@
     },
     "platform": {
       "aml_subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
-      "aml_resource_group": "silio_westus",
-      "aml_workspace_name": "silio-aml",
-      "aml_compute_target": "silio-gpu",
+      "aml_resource_group": "xiaoming_westus",
+      "aml_workspace_name": "xiaoming-aml",
+      "aml_compute_target": "xiaoming-gpu",
       "aml_experiment_name": "aml-seqcls-prompt-deepset",
-      "aml_datastore_name": "siliodata",
+      "aml_datastore_name": "xiaomingdata",
       "aml_mlflow_version": "1.23.1",
       "aml_azureml_mlflow_version": "1.38.0",
       "aml_azure_cli_core_version": "2.34.1"
