@@ -1,0 +1,102 @@
+name: silio-llm
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      num_gpus: {type: int, default: 1}
+      datastore_name: {type: str, default: ""}
+      model_name_or_path: {type: str, default: "mistralai/Mistral-7B-Instruct-v0.2"}
+      train_blob_path: {type: str, default: ""}
+      train_file: {type: str, default: "train.json"}
+      eval_blob_path: {type: str, default: ""}
+      eval_file: {type: str, default: "eval.json"}
+      max_seq_length: {type: int, default: 32000}
+      batch_size: {type: int, default: 2}
+      gradient_accumulation_steps: {type: int, default: 1}
+      learning_rate: {type: float, default: 0.00001}
+      num_epochs: {type: float, default: 3.0}
+      weight_decay: {type: float, default: 0.01}
+      warmup_steps: {type: int, default: 1000}
+      eval_steps: {type: int, default: 500}
+      output_dir: {type: str, default: "./output/"}
+      seed: {type: int, default: 42}
+      save_total_limit: {type: int, default: 10}
+      registered_name: {type: str, default: ""}
+    command: "sh ./script/run_llm.e2e.sh \
+              --numgpus={num_gpus} \
+              --randomseed={seed} \
+              --dsname={datastore_name} \
+              --trainblob={train_blob_path} \
+              --trainfile={train_file} \
+              --evalblob={eval_blob_path} \
+              --evalfile={eval_file} \
+              --outputdir={output_dir} \
+              --modeldir={model_name_or_path} \
+              --maxseqlen={max_seq_length} \
+              --batchsize={batch_size} \
+              --learningrate={learning_rate} \
+              --numepochs={num_epochs} \
+              --gradaccsteps={gradient_accumulation_steps} \
+              --weightdecay={weight_decay} \
+              --warmupsteps={warmup_steps} \
+              --evalsteps={eval_steps} \
+              --savelimit={save_total_limit} \
+              --registeredname={registered_name}"
+  llm_train:
+    parameters:
+      num_gpus: {type: int, default: 1}
+      datastore_name: {type: str, default: ""}
+      model_name_or_path: {type: str, default: "mistralai/Mistral-7B-Instruct-v0.2"}
+      train_blob_path: {type: str, default: ""}
+      train_file: {type: str, default: "train.json"}
+      eval_blob_path: {type: str, default: ""}
+      eval_file: {type: str, default: "eval.json"}
+      max_seq_length: {type: int, default: 32000}
+      batch_size: {type: int, default: 2}
+      gradient_accumulation_steps: {type: int, default: 1}
+      learning_rate: {type: float, default: 0.00001}
+      num_epochs: {type: float, default: 3.0}
+      weight_decay: {type: float, default: 0.01}
+      warmup_steps: {type: int, default: 1000}
+      eval_steps: {type: int, default: 500}
+      output_dir: {type: str, default: "./output/"}
+      seed: {type: int, default: 42}
+      save_total_limit: {type: int, default: 10}
+    command: "sh ./script/run_llm.train.sh \
+              --numgpus={num_gpus} \
+              --randomseed={seed} \
+              --dsname={datastore_name} \
+              --trainblob={train_blob_path} \
+              --trainfile={train_file} \
+              --evalblob={eval_blob_path} \
+              --evalfile={eval_file} \
+              --outputdir={output_dir} \
+              --modeldir={model_name_or_path} \
+              --maxseqlen={max_seq_length} \
+              --batchsize={batch_size} \
+              --learningrate={learning_rate} \
+              --numepochs={num_epochs} \
+              --gradaccsteps={gradient_accumulation_steps} \
+              --weightdecay={weight_decay} \
+              --warmupsteps={warmup_steps} \
+              --evalsteps={eval_steps} \
+              --savelimit={save_total_limit}"
+  llm_infer:
+    parameters:
+      train_run_id: {type: str, default: ""}
+      artifact_path: {type: str, default: ""}
+      datastore_name: {type: str, default: ""}
+      eval_blob_path: {type: str, default: ""}
+      eval_file: {type: str, default: "eval.json"}
+      max_seq_length: {type: int, default: 128}
+      batch_size: {type: int, default: 16}
+    command: "sh ./script/run_llm.eval.sh \
+              --runid={train_run_id} \
+              --artifact={artifact_path} \
+              --dsname={datastore_name} \
+              --evalblob={eval_blob_path} \
+              --evalfile={eval_file} \
+              --maxseqlen={max_seq_length} \
+              --batchsize={batch_size}"
