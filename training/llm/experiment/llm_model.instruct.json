@@ -1,0 +1,39 @@
+[
+  {
+    "hparam": {
+      "num_gpus": 1,
+      "model_type": "olmo",
+      "model_name_or_path": "allenai/OLMo-7B",
+      "max_seq_length": 2048,
+      "batch_size": 2,
+      "gradient_accumulation_steps": 1,
+      "learning_rate": 1e-04,
+      "num_epochs": 1.0,
+      "weight_decay": 0.01,
+      "warmup_steps": 1000,
+      "eval_steps": 500,
+      "output_dir": "./output",
+      "seed": 42,
+      "save_total_limit": 10,
+      "registered_name": "olmo-7b-instruct-tulu-v2"
+    },
+    "data": {
+      "datastore_name": "siliodata",
+      "train_blob_path": "data/instruct/tulu-v2/train.sample.json",
+      "train_file": "train.json",
+      "eval_blob_path": "data/instruct/tulu-v2/eval.json",
+      "eval_file": "eval.json"
+    },
+    "platform": {
+      "aml_subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+      "aml_resource_group": "silio_westus",
+      "aml_workspace_name": "silio-aml",
+      "aml_compute_target": "silio-gpu",
+      "aml_experiment_name": "aml-llm-instruct-tulu-v2",
+      "aml_datastore_name": "siliodata",
+      "aml_mlflow_version": "1.23.1",
+      "aml_azureml_mlflow_version": "1.38.0",
+      "aml_azure_cli_core_version": "2.34.1"
+    }
+  }
+]
