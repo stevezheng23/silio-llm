@@ -56,7 +56,7 @@ class TritonPythonModel:
         # and create a pb_utils.InferenceResponse for each of them.
         for request in requests:
             messages = pd_utils.get_input_tensor_by_name(request, 'messages').as_numpy().tolist()
-            prompt = self._format_prompt(messages)
+            prompt = self._format_messages(messages)
             input_tokens = self.tokenizer.encode(prompt)
             arguments = pd_utils.get_input_tensor_by_name(request, 'arguments').as_numpy().tolist()
             output_results = []
@@ -65,9 +65,9 @@ class TritonPythonModel:
                 params = og.GeneratorParams(self.model)
                 params.set_search_options(
                     max_length=argument['max_length'],
+                    temperature=argument['temperature'],
                     top_p=argument['top_p'],
                     top_k=argument['top_k'],
-                    temperature=argument['temperature'],
                     repetition_penalty=argument['repetition_penalty'],
                 )
                 params.input_ids = input_tokens
