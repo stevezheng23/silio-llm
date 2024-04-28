@@ -32,12 +32,12 @@ class TritonPythonModel:
         with open(config_file, 'r', encoding='utf-8') as in_file:
             self.config = json.load(in_file)
 
-        model_path = os.path.join(args['model_repository'], args['model_version'], 'model.gguf')
+        model_path = os.path.join(args['model_repository'], args['model_version'], 'model/model.gguf')
         self.model = Llama(
-            model_path=model_path,  # path to GGUF file
-            n_ctx=self.config["n_ctx"],  # The max sequence length to use - note that longer sequence lengths require much more resources
-            n_threads=self.config["n_threads"], # The number of CPU threads to use, tailor to your system and the resulting performance
-            n_gpu_layers=self.config["n_gpu_layers"], # The number of layers to offload to GPU, if you have GPU acceleration available. Set to 0 if no GPU acceleration is available on your system.
+            model_path=model_path,
+            n_ctx=self.config["n_ctx"],
+            n_threads=self.config["n_threads"],
+            n_gpu_layers=self.config["n_gpu_layers"],
         )
 
     def execute(self, requests):
