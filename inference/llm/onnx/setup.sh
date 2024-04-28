@@ -16,7 +16,6 @@ cd ./tmp/
 
 export MODEL_ID=$(cat ./config.json | jq -r '.model.id')
 export MODEL_TYPE=$(cat ./config.json | jq -r '.model.type')
-export MODEL_NUM_LABELS=$(cat ./config.json | jq -r '.model.num_labels')
 export MODEL_ARTIFACT_PATH=$(cat ./config.json | jq -r '.model.artifact_path')
 export MODEL_SUBSCRIPTION_ID=$(cat ./config.json | jq -r '.model.subscription_id')
 export MODEL_RESOURCE_GROUP=$(cat ./config.json | jq -r '.model.resource_group')
@@ -30,7 +29,6 @@ export IMAGE_REGISTRY_SERVER=$(cat ./config.json | jq -r '.image.registry_server
 
 echo "model id                  = $MODEL_ID"
 echo "model type                = $MODEL_TYPE"
-echo "model # labels            = $MODEL_NUM_LABELS"
 echo "model artifact path       = $MODEL_ARTIFACT_PATH"
 echo "model subscription id     = $MODEL_SUBSCRIPTION_ID"
 echo "model resource group      = $MODEL_RESOURCE_GROUP"
