@@ -1,7 +1,7 @@
 {
   "model": {
-    "id": "silio-phi-3-mini-128k-instruct:1",
-    "name": "silio-phi-3-mini-128k-instruct",
+    "id": "silio-phi-3-mini-4k-instruct:1",
+    "name": "silio-phi-3-mini-4k-instruct",
     "version": 1,
     "type": "llama",
     "runtime": "onnx",
