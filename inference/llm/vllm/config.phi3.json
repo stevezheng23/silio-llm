@@ -1,0 +1,22 @@
+{
+  "model": {
+    "id": "silio-phi-3-mini-4k-instruct:1",
+    "name": "silio-phi-3-mini-4k-instruct",
+    "version": 1,
+    "type": "llama",
+    "runtime": "vllm",
+    "artifact_path": "silio-llm-vllm",
+    "run_id": "aml_silio_llm",
+    "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+    "resource_group": "silio_westus",
+    "workspace_name": "silio-aml"
+  },
+  "image": {
+    "name": "silio-llm",
+    "tag_prefix": "phi-3-mini-4k-instruct-vllm",
+    "subscription_id": "c10a26f2-5978-4a22-bce8-82f210bcfd40",
+    "resource_group": "silio_westus",
+    "registry_name": "silio",
+    "registry_server": "silio.azurecr.io"
+  }
+}
