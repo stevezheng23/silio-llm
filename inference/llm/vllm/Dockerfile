@@ -1,5 +1,7 @@
-FROM nvcr.io/nvidia/tritonserver:24.01-vllm-python-py3
+FROM nvcr.io/nvidia/tritonserver:24.03-py3
 LABEL author.name="Mingzhi Zheng"
 LABEL author.email="stevezheng23@gmail.com"
+
+RUN pip --no-cache-dir install vllm
 
 COPY model_repository /model_repository
