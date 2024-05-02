@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def test_generate(examples, model_endpoint, model_name, model_version, timeout):
     triton_client = tritonclient.grpc.InferenceServerClient(url=model_endpoint,
-                                                            network_timeout=timeout,  # this works when inference took too long (inference with cpu)
+                                                            network_timeout=timeout,
                                                             connection_timeout=timeout,
                                                             verbose=False)
     model_metadata = triton_client.get_model_metadata(model_name=model_name, model_version=model_version, as_json=True)
@@ -60,7 +60,10 @@ def main():
 
     if args.task_name == "generate":
         results = test_generate(test_examples,
-            args.model_endpoint, args.model_name, args.model_version, args.timeout)
+                                args.model_endpoint,
+                                args.model_name,
+                                args.model_version,
+                                args.timeout)
     else:
         raise ValueError(f"unsupported task: {args.task_name}")
 
