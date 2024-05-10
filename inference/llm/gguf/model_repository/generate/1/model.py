@@ -77,8 +77,8 @@ class TritonPythonModel:
                     top_p=argument['top_p'],
                     top_k=argument['top_k'],
                     repeat_penalty=argument['repeat_penalty'],
-                    stop=argument['stop'],
-                    echo=argument['echo'],
+                    stop=["<|end|>"],
+                    echo=False,
                 )
                 result = {
                     'role': 'assistant',

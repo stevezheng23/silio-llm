@@ -12,9 +12,7 @@
           "temperature": 0.0,
           "top_p": 1.0,
           "top_k": 5,
-          "repeat_penalty": 1.0,
-          "stop": ["<|end|>"],
-          "echo": false
+          "repeat_penalty": 1.0
         }
       ]
     },
