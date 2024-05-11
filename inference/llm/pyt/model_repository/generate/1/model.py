@@ -73,7 +73,7 @@ class TritonPythonModel:
             for arg in arguments:
                 argument = json.loads(arg.decode('utf-8'))
                 generation_args = {
-                    'max_new_tokens': argument['max_new_tokens'],
+                    'max_new_tokens': argument['max_tokens'],
                     'temperature': argument['temperature'],
                     'top_p': argument['top_p'],
                     'top_k': argument['top_k'],
