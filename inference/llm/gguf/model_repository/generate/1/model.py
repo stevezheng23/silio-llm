@@ -76,7 +76,7 @@ class TritonPythonModel:
                     temperature=argument['temperature'],
                     top_p=argument['top_p'],
                     top_k=argument['top_k'],
-                    repeat_penalty=argument['repeat_penalty'],
+                    repeat_penalty=argument['repetition_penalty'],
                     stop=["<|end|>"],
                     echo=False,
                 )
