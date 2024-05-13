@@ -64,7 +64,7 @@ class TritonPythonModel:
                 argument = json.loads(arg.decode('utf-8'))
                 params = og.GeneratorParams(self.model)
                 params.set_search_options(
-                    max_length=argument['max_length'],
+                    max_length=argument['max_tokens'],
                     temperature=argument['temperature'],
                     top_p=argument['top_p'],
                     top_k=argument['top_k'],
